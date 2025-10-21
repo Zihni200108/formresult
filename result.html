@@ -229,82 +229,32 @@
   </div>
 
   <script>
-  const reportsContainer = document.getElementById('reportsContainer');
-  const addReportBtn = document.getElementById('addReport');
-  const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
+    const reportsContainer = document.getElementById('reportsContainer');
+    const portBtn = document.getElementById('addReport');
+    const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
 
-  // === fungsi ubah field dinamis ===
-  function updateFields(selectEl) {
-    const block = selectEl.closest('.report-block');
-    const container = block.querySelector('.dynamicFields');
-    const brand = selectEl.value;
+    // === fungsi ubah field dinamis ===
+    function updateFields(selectEl) {
+      const block = selectEl.closest('.report-block');
+      const container = block.querySelector('.dynamicFields');
+      const brand = selectEl.value;
 
-    if (brand.includes('Lead')) {
-      container.innerHTML = `
-        <label>Spend (Rp):</label>
-        <input type="text" name="spend" required />
+      if (brand.includes('Lead')) {
+        container.innerHTML = `
+          <label>Spend (Rp):</label>
+          <input type="text" name="spend" required />
 
-        <label>Lead:</label>
-        <input type="text" name="lead" required />
+          <label>Lead:</label>
+          <input type="text" name="lead" required />
 
-        <label>CPL (Rp):</label>
-        <input type="text" name="cpl" required />
+          <label>CPL (Rp):</label>
+          <input type="text" name="cpl" required />
 
-        <label>Saldo Ads (Rp):</label>
-        <input type="text" name="saldo" required />
-      `;
-    } else {
-      container.innerHTML = `
-        <label>Spend (Rp):</label>
-        <input type="text" name="spend" required />
-
-        <label>Omset Ads (Rp):</label>
-        <input type="text" name="omset" required />
-
-        <label>ROAS:</label>
-        <input type="text" name="roas" required />
-
-        <label>Saldo akun:</label>
-        <select name="tipeSaldo">
-          <option value="top up otomatis">Top Up Otomatis</option>
-          <option value="manual">Manual</option>
-        </select>
-
-        <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
-      `;
-    }
-  }
-
-  // === tambah blok baru ===
-  addReportBtn.addEventListener('click', () => {
-    let newBlock;
-
-    if (reportsContainer.children.length > 0) {
-      // clone dari blok pertama kalau masih ada
-      newBlock = reportsContainer.firstElementChild.cloneNode(true);
-    } else {
-      // kalau semua dihapus → buat blok baru manual
-      newBlock = document.createElement('div');
-      newBlock.classList.add('report-block');
-      newBlock.innerHTML = `
-        <button type="button" class="remove-btn">Hapus</button>
-
-        <label>Brand:</label>
-        <select name="brand" class="brandSelect">
-          <option value="BKO">BKO</option>
-          <option value="Terra">Terra</option>
-          <option value="SPU">SPU</option>
-          <option value="Miracle">Miracle</option>
-          <option value="Pelangi">Pelangi</option>
-          <option value="Lead">Lead</option>
-          <option value="Lead Bimacommerce">Lead Bimacommerce</option>
-          <option value="Lead CTWA Naraa">Lead CTWA Naraa</option>
-        </select>
-
-        <label>Tanggal:</label>
-        <input type="date" name="tanggal" required />
-
-        <div class="dynamicFields">
+          <label>Saldo Ads (Rp):</label>
+          <input type="text" name="saldo" required />
+        `;
+      } else {
+        container.innerHTML = `
           <label>Spend (Rp):</label>
           <input type="text" name="spend" required />
 
@@ -321,73 +271,134 @@
           </select>
 
           <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
-        </div>
-      `;
+        `;
+      }
     }
 
-    // kosongkan semua input baru
-    newBlock.querySelectorAll('input').forEach(i => i.value = '');
-    reportsContainer.appendChild(newBlock);
+    // === tambah blok baru ===
+    portBtn.addEventListener('click', () => {
+      const newBlock = reportsContainer.firstElementChild.cloneNode(true);
+      newBlock.querySelectorAll('input').forEach(i => i.value = '');
+      reportsContainer.appendChild(newBlock);
 
-    // tambahkan event listener
-    newBlock.querySelector('.brandSelect').addEventListener('change', (e) => updateFields(e.target));
-    newBlock.querySelector('.remove-btn').addEventListener('click', () => {
-      newBlock.remove();
-    });
-  });
-
-  // === event listener untuk brand awal ===
-  document.querySelectorAll('.brandSelect').forEach(select => {
-    select.addEventListener('change', (e) => updateFields(e.target));
-  });
-
-  // === hapus blok ===
-  document.querySelectorAll('.remove-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      this.closest('.report-block').remove();
-    });
-  });
-
-  // === kirim ke WhatsApp ===
-  sendWhatsAppBtn.addEventListener('click', () => {
-    const reports = document.querySelectorAll('.report-block');
-    let message = '';
-
-    const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-
-    reports.forEach((block) => {
-      const brand = block.querySelector('.brandSelect').value;
-      const tanggalInput = block.querySelector('input[name="tanggal"]').value;
-      const tanggal = new Date(tanggalInput);
-
-      const hariText = hari[tanggal.getDay()];
-      const tanggalFormatted = `${hariText}, ${tanggal.getDate()} ${bulan[tanggal.getMonth()]}`;
-
-      const spend = block.querySelector('input[name="spend"]').value;
-
-      if (brand.includes('Lead')) {
-        const lead = block.querySelector('input[name="lead"]').value;
-        const cpl = block.querySelector('input[name="cpl"]').value;
-        const saldo = block.querySelector('input[name="saldo"]').value;
-
-        message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Lead : ${lead}\n* CPL : Rp ${cpl}\n* Saldo Ads : Rp ${saldo}\n\n`;
-      } else {
-        const omset = block.querySelector('input[name="omset"]').value;
-        const roas = block.querySelector('input[name="roas"]').value;
-        const tipeSaldo = block.querySelector('select[name="tipeSaldo"]').value;
-        const saldo = block.querySelector('input[name="saldo"]').value;
-
-        message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Omset Ads : Rp ${omset}\n* ROAS : ${roas}\n* Saldo akun (${tipeSaldo}) : Rp ${saldo}\n\n`;
-      }
+      newBlock.querySelector('.brandSelect').addEventListener('change', (e) => updateFields(e.target));
+      newBlock.querySelector('.remove-btn').addEventListener('click', () => {
+        newBlock.remove();
+      });
     });
 
-    const encodedMsg = encodeURIComponent(message.trim());
-    const waNumber = "6282332945661"; // ← ganti dengan nomor WA tujuan
-    window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
-  });
-</script>
+    // === event listener untuk brand awal ===
+    document.querySelectorAll('.brandSelect').forEach(select => {
+      select.addEventListener('change', (e) => updateFields(e.target));
+    });
 
+    // === hapus blok ===
+    document.querySelectorAladdRel('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        this.closest('.report-block').remove();
+      });
+    });
+
+       sendWhatsAppBtn.addEventListener('click', () => {
+      const reports = document.querySelectorAll('.report-block');
+      let message = '';
+
+      const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+      reports.forEach((block) => {
+        const brand = block.querySelector('.brandSelect').value;
+        const tanggalInput = block.querySelector('input[name="tanggal"]').value;
+        const tanggal = new Date(tanggalInput);
+
+        const hariText = hari[tanggal.getDay()];
+        const tanggalFormatted = `${hariText}, ${tanggal.getDate()} ${bulan[tanggal.getMonth()]}`;
+
+        const spend = block.querySelector('input[name="spend"]').value;
+
+        if (brand.includes('Lead')) {
+          const lead = block.querySelector('input[name="lead"]').value;
+          const cpl = block.querySelector('input[name="cpl"]').value;
+          const saldo = block.querySelector('input[name="saldo"]').value;
+
+          message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Lead : ${lead}\n* CPL : Rp ${cpl}\n* Saldo Ads : Rp ${saldo}\n\n`;
+        } else {
+          const omset = block.querySelector('input[name="omset"]').value;
+          const roas = block.querySelector('input[name="roas"]').value;
+          const tipeSaldo = block.querySelector('select[name="tipeSaldo"]').value;
+          const saldo = block.querySelector('input[name="saldo"]').value;
+
+          message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Omset Ads : Rp ${omset}\n* ROAS : ${roas}\n* Saldo akun (${tipeSaldo}) : Rp ${saldo}\n\n`;
+        }
+      });
+
+      const encodedMsg = encodeURIComponent(message.trim());
+      const waNumber = "6282332945661"; // ← ganti dengan nomor WA tujuan
+      window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
+    });
+
+    addReportBtn.addEventListener('click', () => {
+  let newBlock;
+
+  if (reportsContainer.children.length > 0) {
+    // kalau masih ada blok, clone dari yang pertama
+    newBlock = reportsContainer.firstElementChild.cloneNode(true);
+  } else {
+    // kalau semua sudah dihapus, buat blok baru manual
+    newBlock = document.createElement('div');
+    newBlock.classList.add('report-block');
+    newBlock.innerHTML = `
+      <button type="button" class="remove-btn">Hapus</button>
+
+      <label>Brand:</label>
+      <select name="brand" class="brandSelect">
+        <option value="BKO">BKO</option>
+        <option value="Terra">Terra</option>
+        <option value="SPU">SPU</option>
+        <option value="Miracle">Miracle</option>
+        <option value="Pelangi">Pelangi</option>
+        <option value="Lead">Lead</option>
+        <option value="Lead Bimacommerce">Lead Bimacommerce</option>
+        <option value="Lead CTWA Naraa">Lead CTWA Naraa</option>
+      </select>
+
+      <label>Tanggal:</label>
+      <input type="date" name="tanggal" required />
+
+      <div class="dynamicFields">
+        <label>Spend (Rp):</label>
+        <input type="text" name="spend" required />
+
+        <label>Omset Ads (Rp):</label>
+        <input type="text" name="omset" required />
+
+        <label>ROAS:</label>
+        <input type="text" name="roas" required />
+
+        <label>Saldo akun:</label>
+        <select name="tipeSaldo">
+          <option value="top up otomatis">Top Up Otomatis</option>
+          <option value="manual">Manual</option>
+        </select>
+
+        <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
+      </div>
+    `;
+  }
+
+  // kosongkan semua input baru
+  newBlock.querySelectorAll('input').forEach(i => i.value = '');
+
+  reportsContainer.appendChild(newBlock);
+
+  // tambahkan event listener
+  newBlock.querySelector('.brandSelect').addEventListener('change', (e) => updateFields(e.target));
+  newBlock.querySelector('.remove-btn').addEventListener('click', () => {
+    newBlock.remove();
+  });
+});
+
+  </script>
 </body>
 </html>
 

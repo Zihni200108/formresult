@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Report ke WhatsApp</title>
+  <style>
+      :root {
+      --primary-green: #1a9e63;
+      --light-gray: #f5f7fa;
+      --gray-border: #d1d5db;
+      --text-color: #111827;
+      --background: #ffffff;
+      --error: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--light-gray);
+      padding: 24px;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 720px;
+      margin: auto;
+      background-color: var(--background);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary-green);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    .report-block {
+      border: 1px solid var(--gray-border);
+      padding: 24px;
+      border-radius: 10px;
+      background-color: var(--background);
+      margin-bottom: 24px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-border);
+      font-size: 14px;
+      background-color: #fff;
+      color: var(--text-color);
+      transition: border 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 2px rgba(26, 158, 99, 0.15);
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* tombol tambah data */
+    .add-btn {
+      background-color: #2563eb;
+      color: #fff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-btn:hover {
+      background-color: #1e40af;
+    }
+
+    /* tombol whatsapp */
+    .whatsapp-btn {
+      background-color: var(--primary-green);
+      color: #fff;
+      width: 100%;
+    }
+
+    .whatsapp-btn:hover {
+      background-color: #157a4f;
+    }
+
+    /* tombol hapus diperbagus */
+    .remove-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: var(--error);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .remove-btn:hover {
+      background-color: #ef4444;
+      color: #fff;
+    }
+
+    .remove-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: flex-start; /* tombol tambah data ke kiri */
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .button-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .add-btn, .whatsapp-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Reporting ke WhatsApp</h2>
+    <form id="reportForm">
+      <div id="reportsContainer">
+        <div class="report-block">
+          <button type="button" class="remove-btn">Hapus</button>
+
+          <label>Brand:</label>
+          <select name="brand" class="brandSelect">
+            <option value="BKO">BKO</option>
+            <option value="Terra">Terra</option>
+            <option value="SPU">SPU</option>
+            <option value="Miracle">Miracle</option>
+            <option value="Pelangi">Pelangi</option>
+            <option value="Lead">Lead</option>
+            <option value="Lead Bimacommerce">Lead Bimacommerce</option>
+            <option value="Lead CTWA Naraa">Lead CTWA Naraa</option>
+          </select>
+
+          <label>Tanggal:</label>
+          <input type="date" name="tanggal" required />
+
+          <div class="dynamicFields">
+            <!-- kolom dinamis tergantung brand -->
+            <label>Spend (Rp):</label>
+            <input type="text" name="spend" required />
+
+            <label>Omset Ads (Rp):</label>
+            <input type="text" name="omset" required />
+
+            <label>ROAS:</label>
+            <input type="text" name="roas" required />
+
+            <label>Saldo akun:</label>
+            <select name="tipeSaldo">
+              <option value="top up otomatis">Top Up Otomatis</option>
+              <option value="manual">Manual</option>
+            </select>
+
+            <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="add-btn" id="addReport">+ Tambah Data</button>
+      </div>
+
+      <button type="button" class="whatsapp-btn" id="sendWhatsApp">Kirim ke WhatsApp</button>
+    </form>
+  </div>
+
+  <script>
+    const reportsContainer = document.getElementById('reportsContainer');
+    const addReportBtn = document.getElementById('addReport');
+    const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
+
+    // === fungsi ubah field dinamis ===
+    function updateFields(selectEl) {
+      const block = selectEl.closest('.report-block');
+      const container = block.querySelector('.dynamicFields');
+      const brand = selectEl.value;
+
+      if (brand.includes('Lead')) {
+        container.innerHTML = `
+          <label>Spend (Rp):</label>
+          <input type="text" name="spend" required />
+
+          <label>Lead:</label>
+          <input type="text" name="lead" required />
+
+          <label>CPL (Rp):</label>
+          <input type="text" name="cpl" required />
+
+          <label>Saldo Ads (Rp):</label>
+          <input type="text" name="saldo" required />
+        `;
+      } else {
+        container.innerHTML = `
+          <label>Spend (Rp):</label>
+          <input type="text" name="spend" required />
+
+          <label>Omset Ads (Rp):</label>
+          <input type="text" name="omset" required />
+
+          <label>ROAS:</label>
+          <input type="text" name="roas" required />
+
+          <label>Saldo akun:</label>
+          <select name="tipeSaldo">
+            <option value="top up otomatis">Top Up Otomatis</option>
+            <option value="manual">Manual</option>
+          </select>
+
+          <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
+        `;
+      }
+    }
+
+    // === tambah blok baru ===
+    addReportBtn.addEventListener('click', () => {
+      const newBlock = reportsContainer.firstElementChild.cloneNode(true);
+      newBlock.querySelectorAll('input').forEach(i => i.value = '');
+      reportsContainer.appendChild(newBlock);
+
+      newBlock.querySelector('.brandSelect').addEventListener('change', (e) => updateFields(e.target));
+      newBlock.querySelector('.remove-btn').addEventListener('click', () => {
+        newBlock.remove();
+      });
+    });
+
+    // === event listener untuk brand awal ===
+    document.querySelectorAll('.brandSelect').forEach(select => {
+      select.addEventListener('change', (e) => updateFields(e.target));
+    });
+
+    // === hapus blok ===
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        this.closest('.report-block').remove();
+      });
+    });
+
+       sendWhatsAppBtn.addEventListener('click', () => {
+      const reports = document.querySelectorAll('.report-block');
+      let message = '';
+
+      const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+      reports.forEach((block) => {
+        const brand = block.querySelector('.brandSelect').value;
+        const tanggalInput = block.querySelector('input[name="tanggal"]').value;
+        const tanggal = new Date(tanggalInput);
+
+        const hariText = hari[tanggal.getDay()];
+        const tanggalFormatted = `${hariText}, ${tanggal.getDate()} ${bulan[tanggal.getMonth()]}`;
+
+        const spend = block.querySelector('input[name="spend"]').value;
+
+        if (brand.includes('Lead')) {
+          const lead = block.querySelector('input[name="lead"]').value;
+          const cpl = block.querySelector('input[name="cpl"]').value;
+          const saldo = block.querySelector('input[name="saldo"]').value;
+
+          message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Lead : ${lead}\n* CPL : Rp ${cpl}\n* Saldo Ads : Rp ${saldo}\n\n`;
+        } else {
+          const omset = block.querySelector('input[name="omset"]').value;
+          const roas = block.querySelector('input[name="roas"]').value;
+          const tipeSaldo = block.querySelector('select[name="tipeSaldo"]').value;
+          const saldo = block.querySelector('input[name="saldo"]').value;
+
+          message += `Result ${brand} ${tanggalFormatted}\n* Spend : Rp ${spend}\n* Omset Ads : Rp ${omset}\n* ROAS : ${roas}\n* Saldo akun (${tipeSaldo}) : Rp ${saldo}\n\n`;
+        }
+      });
+
+      const encodedMsg = encodeURIComponent(message.trim());
+      const waNumber = "6282332945661"; // ← ganti dengan nomor WA tujuan
+      window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
+    });
+
+    addReportBtn.addEventListener('click', () => {
+  let newBlock;
+
+  if (reportsContainer.children.length > 0) {
+    // kalau masih ada blok, clone dari yang pertama
+    newBlock = reportsContainer.firstElementChild.cloneNode(true);
+  } else {
+    // kalau semua sudah dihapus, buat blok baru manual
+    newBlock = document.createElement('div');
+    newBlock.classList.add('report-block');
+    newBlock.innerHTML = `
+      <button type="button" class="remove-btn">Hapus</button>
+
+      <label>Brand:</label>
+      <select name="brand" class="brandSelect">
+        <option value="BKO">BKO</option>
+        <option value="Terra">Terra</option>
+        <option value="SPU">SPU</option>
+        <option value="Miracle">Miracle</option>
+        <option value="Pelangi">Pelangi</option>
+        <option value="Lead">Lead</option>
+        <option value="Lead Bimacommerce">Lead Bimacommerce</option>
+        <option value="Lead CTWA Naraa">Lead CTWA Naraa</option>
+      </select>
+
+      <label>Tanggal:</label>
+      <input type="date" name="tanggal" required />
+
+      <div class="dynamicFields">
+        <label>Spend (Rp):</label>
+        <input type="text" name="spend" required />
+
+        <label>Omset Ads (Rp):</label>
+        <input type="text" name="omset" required />
+
+        <label>ROAS:</label>
+        <input type="text" name="roas" required />
+
+        <label>Saldo akun:</label>
+        <select name="tipeSaldo">
+          <option value="top up otomatis">Top Up Otomatis</option>
+          <option value="manual">Manual</option>
+        </select>
+
+        <input type="text" name="saldo" placeholder="Isi nominal saldo" required />
+      </div>
+    `;
+  }
+
+  // kosongkan semua input baru
+  newBlock.querySelectorAll('input').forEach(i => i.value = '');
+
+  reportsContainer.appendChild(newBlock);
+
+  // tambahkan event listener
+  newBlock.querySelector('.brandSelect').addEventListener('change', (e) => updateFields(e.target));
+  newBlock.querySelector('.remove-btn').addEventListener('click', () => {
+    newBlock.remove();
+  });
+});
+
+  </script>
+</body>
+</html>
+
